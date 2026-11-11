@@ -1,0 +1,52 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "automotive-dynamic-pricing-engine"
+version = "1.0.0"
+description = "Production FastAPI service for automotive parts quote win-probability and price optimization."
+readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "MIT" }
+authors = [{ name = "Arthur Setiawan" }]
+dependencies = [
+  "fastapi>=0.115.0",
+  "uvicorn[standard]>=0.34.0",
+  "pydantic>=2.10.0",
+  "pydantic-settings>=2.7.0",
+  "numpy>=2.0.0",
+  "pandas>=2.2.0",
+  "scikit-learn>=1.5.0,<1.6",
+  "joblib>=1.4.0",
+  "xgboost>=2.0.0",
+]
+
+[project.optional-dependencies]
+dev = [
+  "httpx>=0.28.0",
+  "pytest>=8.3.0",
+  "ruff>=0.8.0",
+  "mypy>=1.14.0",
+]
+
+[tool.setuptools.packages.find]
+include = ["app*", "models*", "guardrails*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP"]
+
+[tool.mypy]
+python_version = "3.11"
+strict = false
+ignore_missing_imports = true
+warn_unused_ignores = true
+packages = ["app", "models", "guardrails"]

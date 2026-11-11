@@ -1,0 +1,41 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+.venv/
+venv/
+env/
+.env
+.env.*
+!.env.example
+
+# Packaging / tooling
+build/
+dist/
+*.egg-info/
+.eggs/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+.tox/
+.cache/
+
+# IDE / OS
+.idea/
+.vscode/
+*.swp
+.DS_Store
+
+# Local data / notebooks
+data/
+notebooks/
+*.ipynb
+
+# Keep artifacts directory but ignore ad-hoc exports (committed model.joblib is intentional)
+artifacts/*
+!artifacts/model.joblib
+!artifacts/.gitkeep
