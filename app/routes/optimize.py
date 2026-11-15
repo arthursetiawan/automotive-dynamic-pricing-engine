@@ -8,6 +8,7 @@ import time
 from fastapi import APIRouter, HTTPException, Request
 
 from app.schemas import OptimizePriceRequest, OptimizePriceResponse
+from app.shadow import log_shadow_decision
 from guardrails.clamping import clamp_price
 from models.inference import get_model
 
@@ -60,16 +61,28 @@ def optimize_price(payload: OptimizePriceRequest, request: Request) -> OptimizeP
         raise HTTPException(status_code=500, detail="optimization failed") from exc
 
     latency_ms = (time.perf_counter() - started) * 1000.0
-    logger.info(
-        "endpoint=optimize-price latency_ms=%.2f raw=%.2f clamped=%.2f "
-        "floor=%.2f ceiling=%.2f win_probability=%.4f",
-        latency_ms,
-        raw,
-        clamped,
-        margin_floor,
-        tariff_ceiling,
-        win_probability,
-    )
+    if settings.shadow_logging:
+        log_shadow_decision(
+            payload=payload,
+            win_prob=win_probability,
+            raw_model_recommendation=raw,
+            margin_floor=margin_floor,
+            tariff_ceiling=tariff_ceiling,
+            clamped_price=clamped,
+            model_name=model.model_name,
+            latency_ms=latency_ms,
+        )
+    else:
+        logger.info(
+            "endpoint=optimize-price latency_ms=%.2f raw=%.2f clamped=%.2f "
+            "floor=%.2f ceiling=%.2f win_probability=%.4f",
+            latency_ms,
+            raw,
+            clamped,
+            margin_floor,
+            tariff_ceiling,
+            win_probability,
+        )
     return OptimizePriceResponse(
         raw_model_recommendation=raw,
         margin_floor=margin_floor,

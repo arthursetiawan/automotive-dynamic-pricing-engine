@@ -11,7 +11,10 @@ Production-ready FastAPI service that scores automotive aftermarket part quotes 
   - Serialized to `artifacts/model.joblib` (committed so `/predict` works out of the box)
 - **Price guardrails**: `clamped_price = max(margin_floor, min(tariff_ceiling, raw_model_recommendation))`
 - **Endpoints**: `/health`, `/predict`, `/optimize-price` with structured latency logging
-- **Multi-stage Dockerfile** and GitHub Actions CI (ruff + mypy + pytest)
+- **CORS** for `https://arthursetiawan.github.io` and localhost (configurable via `ADPE_CORS_ORIGINS`)
+- **Shadow decision logs** (JSON) on `/optimize-price`: features, win_prob, raw/floor/ceiling/clamped, clamp flags
+- **Eval suite** under `evals/` (clamp invariants + model sanity), wired into CI
+- **Multi-stage Dockerfile**, Render Blueprint (`render.yaml`), and GitHub Actions CI (ruff + mypy + pytest)
 
 ## Project layout
 
@@ -19,10 +22,13 @@ Production-ready FastAPI service that scores automotive aftermarket part quotes 
 app/                 # FastAPI app, schemas, routes, config
 models/              # train.py + inference helpers
 guardrails/          # clamping logic
-tests/               # pytest suite (schema, clamp, API edge cases)
+tests/               # pytest suite (schema, clamp, API, CORS, shadow)
+evals/               # regression evals (clamp invariants + model sanity)
 artifacts/           # model.joblib (committed for out-of-box inference)
 .github/workflows/   # CI
 Dockerfile           # multi-stage production image
+render.yaml          # Render free-tier Blueprint
+DEPLOY.md            # public HTTPS deploy steps
 ```
 
 ## Quick start (local)
@@ -83,14 +89,24 @@ Environment overrides:
 | `ADPE_MODEL_PATH` / `MODEL_PATH` | `artifacts/model.joblib` | Model artifact path |
 | `ADPE_DEFAULT_TARGET_MARGIN` | `0.12` | Default margin floor fraction |
 | `ADPE_LOG_LEVEL` | `INFO` | Logging level |
+| `ADPE_CORS_ORIGINS` | github.io + localhost | Comma-separated browser origins |
+| `ADPE_SHADOW_LOGGING` | `true` | Emit JSON shadow decisions on optimize |
+| `PORT` | `8000` | Listen port (Render/Fly inject this) |
 
-## Test
+## Test / evals
 
 ```bash
-pytest -q
+pytest -q                 # unit tests + eval suite
+pytest -q evals           # clamp invariants + model sanity only
+make evals
 ```
 
 CI trains a **small fixture model only if** `artifacts/model.joblib` is missing. The committed artifact keeps CI and local `/predict` fast.
+
+## Deploy (public HTTPS)
+
+See [DEPLOY.md](DEPLOY.md). Short version: connect this repo as a Render Blueprint (`render.yaml`)
+on the free plan; the service URL is `https://<service-name>.onrender.com` (no trailing slash).
 
 ## Docker
 
