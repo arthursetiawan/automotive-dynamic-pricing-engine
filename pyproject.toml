@@ -34,7 +34,7 @@ dev = [
 include = ["app*", "models*", "guardrails*"]
 
 [tool.pytest.ini_options]
-testpaths = ["tests"]
+testpaths = ["tests", "evals"]
 pythonpath = ["."]
 
 [tool.ruff]

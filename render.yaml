@@ -1,0 +1,25 @@
+# Render Blueprint — free public HTTPS web service for the pricing API.
+# Dashboard: New → Blueprint → connect this repo → apply.
+# After deploy, the public base URL is https://<service-name>.onrender.com
+# (no trailing slash). Free plan spins down after ~15m idle.
+
+services:
+  - type: web
+    name: automotive-dynamic-pricing-engine
+    runtime: docker
+    plan: free
+    region: oregon
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    healthCheckPath: /health
+    envVars:
+      - key: ADPE_LOG_LEVEL
+        value: INFO
+      - key: ADPE_DEFAULT_TARGET_MARGIN
+        value: "0.12"
+      - key: ADPE_SHADOW_LOGGING
+        value: "true"
+      - key: ADPE_CORS_ORIGINS
+        value: "https://arthursetiawan.github.io,http://localhost:3000,http://localhost:5173,http://localhost:8000,http://127.0.0.1:3000,http://127.0.0.1:5173,http://127.0.0.1:8000"
+      - key: MODEL_PATH
+        value: /app/artifacts/model.joblib
