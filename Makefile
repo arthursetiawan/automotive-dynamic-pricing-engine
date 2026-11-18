@@ -1,13 +1,21 @@
-.PHONY: train serve test lint typecheck ci docker-build
+.PHONY: train serve test smoke lint typecheck ci docker-build quickstart
+
+PYTHON ?= python
 
 train:
-	python -m models.train --n-samples 20000
+	$(PYTHON) -m models.train --n-samples 20000
 
 serve:
-	uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+	$(PYTHON) -m uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
 
 test:
-	pytest -q
+	$(PYTHON) -m pytest -q
+
+smoke:
+	PYTHONPATH=. $(PYTHON) scripts/smoke_api.py
+
+quickstart: test smoke
+	@echo "Ready: run 'make serve' then open http://127.0.0.1:8000/docs"
 
 lint:
 	ruff check app models guardrails tests

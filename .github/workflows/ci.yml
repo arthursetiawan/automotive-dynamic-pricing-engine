@@ -45,3 +45,6 @@ jobs:
 
       - name: Pytest
         run: pytest -q
+
+      - name: API smoke (predict + optimize-price)
+        run: PYTHONPATH=. python scripts/smoke_api.py
