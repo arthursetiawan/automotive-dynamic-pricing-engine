@@ -30,8 +30,9 @@ htmlcov/
 *.swp
 .DS_Store
 
-# Local data / notebooks
-data/
+# Local data / notebooks (keep data/README.md)
+data/*
+!data/README.md
 notebooks/
 *.ipynb
 

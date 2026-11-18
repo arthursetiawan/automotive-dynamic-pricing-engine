@@ -9,6 +9,10 @@
 | **Live demo (portfolio)** | https://arthursetiawan.github.io/demos/automotive-pricing/ — UI mock; **this repo** is the runnable API and training code. |
 | **Non-goals** | No PACCAR (or other employer) proprietary data, internal architectures, or production metrics. **Resume-honest stack only:** Python 3.11+, FastAPI, Pydantic v2, scikit-learn / XGBoost, pytest, ruff, mypy, Docker. |
 
+## Business outcome
+
+Pricing analysts need to respond to a quote with both **how likely it is to win** and **a price that still clears margin and tariff floors**. This service scores each synthetic line-item quote with a trained win model and returns a guardrailed optimized price in one API round-trip—so demos show faster, constraint-aware decisions instead of spreadsheet guesswork. Holdout quality and segment behavior are documented in [`reports/model_card.md`](reports/model_card.md) and [`reports/eda_summary.md`](reports/eda_summary.md); the customer problem and KPIs are in [`docs/problem.md`](docs/problem.md).
+
 ---
 
 ## Run locally in under 5 minutes
@@ -61,7 +65,10 @@ All training labels come from **`models/train.py`**: `generate_synthetic_quotes(
 app/                 # FastAPI app, schemas, routes, config
 models/              # train.py + inference helpers
 guardrails/          # clamping logic
-scripts/             # smoke_api.py (recruiter / CI check)
+scripts/             # smoke_api.py, eda_synthetic_quotes.py
+docs/                # problem brief (customer, KPI, non-goals)
+data/                # README: schema + reproduce synthetic quotes (no committed rows)
+reports/             # eda_summary.md, model_card.md
 tests/               # pytest suite (schema, clamp, API edge cases)
 artifacts/           # model.joblib (committed for out-of-box inference)
 .github/workflows/   # CI
